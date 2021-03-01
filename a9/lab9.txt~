@@ -1,0 +1,8 @@
+1. Disk space
+
+   du -sh ~eggert/src/gnu/emacs-CS-35L/
+
+   577 MB of disk space is used to represent the working files
+   in this directory (~eggert/src/gnu/emacs-CS-35L/)
+
+   

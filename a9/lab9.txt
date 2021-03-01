@@ -1,0 +1,109 @@
+1. Disk space
+
+   du -sh ~eggert/src/gnu/emacs-CS-35L/
+
+   577 MB of disk space is used to represent all files
+   in this directory (~eggert/src/gnu/emacs-CS-35L/)
+
+   du -sh .git
+
+   415 MB of space is used to represent the .git folder
+
+   577 - 415 = 162 MB
+
+
+   Answer:
+   162 MB are used to represent the working files in this directory
+   415 MB are used to represent the .git folder
+
+   Clearly, the .git directory consumes most of the repository space (415 MB).
+   This is because it contains all the necessary information for the project
+   in version control and about committs.
+
+2. Number of local/remote branches
+
+   git branch | wc -l
+   git branch -r | wc -l
+
+   There are 176 local branches.
+   There are 177 remote branches.
+
+3. Number of repositories remote to this repository/where they are
+
+   git remote -v
+
+Output:
+origin	/u/cs/fac/eggert/src/gnu/emacs (fetch)
+origin	/u/cs/fac/eggert/src/gnu/emacs (push)
+savannah	https://git.savannah.gnu.org/git/emacs.git (fetch)
+savannah	https://git.savannah.gnu.org/git/emacs.git (push)
+
+   There are two remote repositories:
+   origin (located at /u/cs/fac/eggert/src/gnu/emacs)
+   savannah (located at https://git.savannah.gnu.org/git/emacs.git)
+
+4. Ten local branches most recently committed to
+   (in order of commit date, most recent first)
+
+   git for-each-ref --count=10 --sort='-*authordate'
+
+fbd062a60d75695129792ed0faa0ce56f4573359 tag	refs/tags/emacs-26.1.92
+83b2e2172dff28395fe471b7942f9a76219633f8 tag	refs/tags/emacs-26.1.91
+2b0c348151973be2466cdc609ab420dfa5413c58 tag	refs/tags/emacs-26.1.90
+50024fc7fa83c8b7cf5e391c8a2ee6bd25d0b916 tag	refs/tags/emacs-26.1
+75edc261e1cab2cf4b1f10779e52156287134734 tag	refs/tags/emacs-26.1-rc1
+ca21fc869b750b7c424e0de76eb604492b9bcd9b tag	refs/tags/emacs-26.0.91
+4706a94dbf07726af27852e1a8669a3ce5ea4043 tag	refs/tags/emacs-26.0.90
+920644e0d43512a49adb104d91b098035fb15f03 tag	refs/tags/emacs-25.3
+c3574b5e5006b8e4055e83a66c39806d753bfc96 tag	refs/tags/emacs-25.2
+19e5b0d786813234825cc7980761e66095d2a4df tag	refs/tags/emacs-25.2-rc2
+
+5. Number of commits in the master branch
+
+   git rev-list --count master
+
+   141268 commits are in the master branch
+
+6. Percentage of commits that are in any branch, are also in master branch
+
+   git rev-list --count --all
+
+   145595 total commits.
+
+   141268 / 145595 * 100 = 97.03%
+
+   Answer: 97.03%
+
+7. The ten people that authored the most master-branch commits in the year
+   2013 or later, and the number of commits each authored during that period
+
+   git shortlog -ns --since=2013 --branches=*[master]*
+
+Below are the ten people who authored the most master-branch commits since 2013,
+with the count of commits since 2013 labeled next to their name.
+  3471  Eli Zaretskii
+  3383  Paul Eggert
+  2814  Glenn Morris
+  1839  Lars Ingebrigtsen
+  1572  Michael Albinus
+  1470  Stefan Monnier
+   624  Noam Postavsky
+   595  Dmitry Gutov
+   506  Alan Mackenzie
+   505  Juri Linkov
+
+8. Use gitk to visualize commit graph in this repository
+
+   cd ~eggert/src/gnu/emacs-CS-35L/
+   gitk
+
+
+   All commits with more than one parent are merge commits, so
+   git cat-file -p $commit_hash_id
+
+   will show multiple parents if it is a merge commit. By using
+   this command on each hash, we find that the merge commits are:
+
+   0c06b93c1e467debd401eb0b3be4652fde14fa95
+   abcb2e62dae6aa26308f7ac9efc89247f89cbe65
+   98ac36efe4ce4bd3a0bca76fc73ce6c7abaa4371

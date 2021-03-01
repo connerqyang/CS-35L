@@ -1,0 +1,87 @@
+1. Maintain this file, hw8.txt
+
+2. Checkout version 3.0 of Diffutils from my repository into new branch
+
+   cd diffutils
+   git checkout -b "quote" "v3.0"
+
+3. Install my change to this branch with patch and quote-3.0-patch.txt
+
+   patch -p1 < ../quote-3.0-patch.txt
+
+Output:
+patching file src/cmp.c
+patching file src/diff.c
+patching file src/diff3.c
+patching file src/dir.c
+patching file src/sdiff.c
+patching file src/util.c
+
+4. Learned how to use Emacs function add-change-log-entry-other-window (C-x 4 a)
+
+5. Used function in #4 to compose Changelog for my patch
+
+   emacs
+   C-x 4 a
+   (Copied entries from git-log.txt for original patch)
+
+6. Commit changes to new branch, using ChangeLog entry as commit message
+
+   git commit -aF ChangeLog
+
+   Ouptut:
+   6 files changed, 43 insertions(+), 43 deletions(-)
+
+7. Use "git format-patch" to generate "formatted-patch.txt"
+
+   git format-patch -1 --stdout > formatted-patch.txt
+
+8. Verify patch by cloning new repository, checking out clone's v3.0
+   into temporary branch "patchery", applying patch with "git am"
+   and building, checking with "make check"
+
+   git checkout -b "patchery" "v3.0"
+   git am formatted-patch.txt
+
+   Ouptut:
+   Applying: 2020-12-04 Conner Qiu Shi Yang <conner@lnxsrv07.seas.ucla.edu>
+
+   ./bootstrap
+   patch -p0 < gets.diff
+
+   Output:
+   patching file lib/stdio.in.h
+
+   ./configure
+   make
+   ./src/diff . -
+   ./src/diff --help
+
+   Since there are no backticks (`), the patch worked.
+
+9. Verify ChangeLog entry works, using "make distdir"
+
+   make distdir
+
+   A new folder named "diffutils-3.0.1-12e8" was created.
+   I checked the ChangeLog in that folder
+   My ChangeLog is the first entry, as expected
+
+10. Run "gitk" command on copy of GNU Emacs git respoitory's master branch
+
+    (I opened XQuartz)
+    ssh -X conner@lnxsrv07.seas.ucla.edu
+    cd cs35L/a8
+    export PATH=/usr/local/cs/bin:$PATH
+    git clone ~eggert/src/gnu/emacs-CS-35L/
+    cd emacs-CS-35L/
+    gitk
+
+    The newest merge that is not newer than 2015-01-25 is titled
+    "lisp/emacs-lisp/cl-generic.el (cl-no-primary-method): New fun and error.
+    (cl--generic-build-combined-method): Use it."
+    at 2015-01-23 13:50:56
+
+    The top three windows show the merges, their authors, and the date/time.
+    The bottom right window show Comments,
+    and the bottom left window shows the ChangeLog.

@@ -1,0 +1,24 @@
+1) Installed XQuartz from https://www.xquartz.org
+2) Used -x option to SSH into SEASNet (ssh -X conner@lnxsrv09.seas.ucla.edu)
+3) Checked for a .ssh subdirectory in my home directory
+4) Used ssh-keygen to generate a public/private rsa key pair in ~/.ssh/id_rsa and created a passphrase, which locally encrypts the key.
+5) Checked that the file ~/.ssh/authorized_keys exists on the server lnxsrv10.
+6) It did not have the file, so I shared the client's public key with the lnxsrv10 server and created the authorized_keys file, using ssh-copy-id conner@lnxsrv10.seas.ucla.edu
+7) SSH into conner@lnxsrv10.seas.ucla.edu (this time using the key pair, not my password) to verify that the authorized_key file now exists in ~/.ssh
+   Indeed, this file now exists. This confirms that I can ssh into lnxsrv10 from lnxsrv09 using the passphrase for my key pair
+8) Exit out of lnxsrv10 and use eval `ssh-agent`
+   The output was "Agent pid 6177"
+9) Add private key to the ssh-agent using ssh-add (this uses default path ~/.ssh/id_rsa)
+10)Now ssh into lnxsrv10 again, which requires no password this time.
+   ssh agent caches my private key, making this possible.
+11)Exit out of lnxsrv09 using exit, and ssh -X back in using ssh -X conner@lnxsrv09@seas.ucla.edu
+12)Run xeyes
+   This creates googly-eyes on the top left of my screen on my local computer's display. The google-eyes follow my mouse.
+   This demonstrates that X11 works properly.
+13)Since we exited out and re-entered lnxsrv09, run ssh-agent, eval `ssh-agent`, and ssh-add again
+   ssh into lnxsrv10 (this required no password)
+   ssh into lnxsrv07 (this did require a password, so multi-hopping did not work without forwarding)
+14)ssh -XA conner@lnxsrv10.seas.ucla.edu (required no password)
+   xeyes (displays the googly-eyes)
+   ssh -XA conner@lnxsrv07.seas.ucla.edu (required no password again, due to -A forwarding!)
+   xeyes (displays the googly-eyes on my local computer again!)

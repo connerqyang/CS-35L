@@ -1,0 +1,48 @@
+#Import necessary libraries
+import os, sys, zlib
+
+def topo_order_commits():
+    #Find .git folder
+    found_git = False
+    path_to_git = ''
+    
+    while not found_git:
+        #Search current directory for .git folder
+        current_dir = os.getcwd()
+        #Check if current directory is .git
+        if os.path.isdir(current_dir + "/.git"):
+            found_git = True
+            path_to_git = current_dir + "/.git"
+        if current_dir == '/':
+            sys.exit('Not inside a Git respository')
+        for root, dirs, files in os.walk(current_dir):
+            for name in files:
+                if name == '.git':
+                    found_git = True
+                    path_to_git = root + '/' + str(file)
+        #Otherwise, go to parent directory
+        if not found_git:
+            current_dir = os.path.abspath(os.path.join(current_dir, os.pardir))
+
+    print(current_dir)
+#    current_dir = path_to_git + '/refs/heads'
+    #branches = get_branches(current_dir)
+   # print(branches)
+
+"""
+def get_branches(current_dir):
+    #Get a list of local branch names                                                  
+    current_dir = path_to_git + '/refs/heads'
+    local_branches = list()
+
+    for root, dirs, files in os.walk(current_dir):
+        for name in files:
+            child_file = os.path.join(current_dir, name)
+            if os.path.isfile(child_file):
+                branches.append(child_file)
+            else:
+                branches = branches + get_branches(child_file)
+    return branches
+"""
+
+topo_order_commits()

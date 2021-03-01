@@ -1,0 +1,52 @@
+1. Verify the problem still occurs in /usr/bin/ls,
+   and check the Coreutils version.
+   I got the error: "ls: cannot access /usr/bin/ls: No such file or directory"
+2. Download the tarball, signature, and keyring using wget
+
+   wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+   wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
+   wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
+3. Decompress tarball
+
+   tar -xJvf coreutils-8.29.tar.xz
+4. Compile and install Coreutils in the project directory
+
+   cd coreutils-8.29.tar.xz
+   ./configure --prefix=/u/cs/ugrad/conner/cs35L/a4
+   make
+   make install
+5. Verify the signature of the tarball with the GNU keyring
+   gpg --verify --keyring ./gnu-keyring.gpg coreutils-8.29.tar.xz.sig
+   
+   It says "WARNING: This key is not certified with a trusted signature!"
+   "There is no indication that the signature belongs to the owner"
+   This error occurs because the key has not been verified.
+   To fix this, I could sign this public key with my private key, to trust it.
+6. Download the patch of Bug#30963 Message #10 using wget
+   Rename it as patch_file
+7. Reproduce the bug on the machine with the unmodified version of coreutils.
+
+   mkdir testdir
+   touch testdir/testfile
+   coreutils-8.29/src/ls -a -A testdir/
+
+   This reproduces the bug because the -A should override the earler -a,
+   but the . and .. filenames still are outputted
+8. Apply the patch of Bug#30963 Message #10
+
+   patch -p1 < patch_file
+
+   The -p1 option strips one leading slash from the file path in the patch file
+
+   The following error messages are outputted:
+   Hunk #1 FAILED at 4.
+   1 out of 1 hunk FAILED -- saving rejects to file NEWS.rej
+9. Ran the "make" command at the top level of my source tree
+   It did many unnecessary commands.
+   It iterates through directories recursively,
+   making changes to lib, src, and man
+   It recompiled the changes that were made by the patch file
+10. Test the modified ls on the tests the unmodified ls didn't work
+
+    Indeed, coreutils-8.29/src/ls -aA testdir/ not only outputs "testfile",
+    meaning that the -A now overrides the earlier -a (no . or .. are outputted)

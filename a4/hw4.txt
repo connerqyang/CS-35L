@@ -1,0 +1,86 @@
+Q1)
+Running the following commands:
+        time ls -aA testdir/
+	time ls testdir/
+outputted a real execution time of 0.004s,
+while running the folllowing commands:
+      time coreutils-8.29/src/ls -aA testdir/
+      time coreutils-8.29/src/ls testdir/
+outputted a real execution time of 0.003s.
+
+Additionally, when I ran
+            time coreutils8.29/src/ls -A testdir/
+it outputted a real execution time of 0.004s,and when I ran
+	    time ls -A testdir/
+it outputted a real execution time of 0.005s
+
+If we enter our src folder, and run
+   time ./ls -aA
+      the real execution time is 0.009s,
+      but if we enter our src folder and run
+         time ls -aA
+	    the real execution time is 0.033s
+
+Based on these few examples, it appears that the execution time
+is mostly lower for the patched ls than the original.
+
+Therefore, it appears that the patch improved the performance of ls.
+
+Q2)
+I did not notice any new bugs caused by the patch during my testing.
+Additionally the original bug has been fixed. Therefore, there seems
+to be nothing to watch out for, other than inconsistencies between
+different companies that are working with teams in my company.
+
+One possible issue could be that later updates build on the old, buggy version.
+However, the patch will likely be removed in an update. 
+
+Q3)
+When this script is invoked on an empty file like /dev/null,
+there is an "IndexError: list index out of range" error.
+This because in line 64,
+"sys.stdout.write(generator.chooseline()"
+calls "return random.choice(self.lines)" in chooseline,
+which in turn calls "return seq[int(self.random() * len(seq))]"
+However, "seq" is empty.
+
+This is because self.lines, in the __init__ function,
+is assigned to f.readlines()
+Python's readlines() function simply returns an empty string
+if the file is empty, such as /dev/null is.
+Essentially, self.lines is an empty string, instead of a list of strings,
+so when the script attempts to select a random string in a list,
+but the variable "seq" (self.lines) is an empty string,
+so an IndexError is returned.
+
+Q4) When I invoke the script with python3, I get the following output:
+    File "randline.py", line 65
+    	 except IOError as (errno, strerror):
+	 		   ^
+Syntax Errror: invalid syntax
+
+    The reason that the script returns a syntax error is that the line
+    "except IOError as (errno, strerror)" has been deprecated in Python 3,
+    as this line relies on exceptions being iterable in Python 2.
+    Exceptions are not iterable in Python 3.
+    Thus, it has been removed in Python 3.
+
+Q5)
+When my shuf.py script is invoked with Python 2 rather than Python 3,
+the output is:
+
+Traceback (most recent call last):
+  File "shuf.py", line 115, in <module>
+       main()
+  File "shuf.py", line 111, in main
+       for input_line in shuf:
+TypeError: instance has no next() method
+
+This is because Python 2 uses .next().
+However, Python 3 has renamed the method to .__next__()
+shuf.py is implemented according to the Python 3 naming,
+so when run in Python 2, it cannot find the .__next__() method,
+since it is looking for .next()
+
+       
+    

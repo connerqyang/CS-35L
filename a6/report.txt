@@ -1,0 +1,350 @@
+lab.txt:
+
+Questions 1) and 2):
+	  The actual implementations are in tr2b.c (1) and tr2u.c (2), but a brief explanation of the algorithm is below
+
+	  First, I check the validity of the arguments
+	  	 - I check if the number of arguments is correct (Should be 2, because of the 'from' and 'to' sets)
+		 - I check if the length of the 'from' and 'to' sets are equal
+		 - I check if the 'from' set has any duplicated bytes
+
+	  Then, I read in from stdin, transliterate if necessary (using a for loop), and write to stdout, using
+	  	getchar(), putchar() in 'tr2b,c', and
+		read(), write() in 'tr2u.c'.
+
+		Additionally, I did thorough error checking throughout.
+Note:
+I generated a file of 5,000,000 bytes, using
+
+         head --bytes=5000000 /dev/urandom > large_input_file.txt
+
+I also compiled my commands
+
+       gcc tr2b.c -o tr2b
+       gcc tr2u.c -o tr2u
+
+Question 3):
+Used strace to compare the system calls issued by tr2b and tr2u commands when:
+(a) copying one file to another
+
+Command:
+    strace -c ./tr2b '123' '456' < large_input_file.txt > output3a1.txt
+
+Output:
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 55.59    0.000343           1       611           write
+ 27.07    0.000167           0       613           read
+  5.51    0.000034           4         9           mmap
+  3.89    0.000024           6         4           mprotect
+  2.11    0.000013           3         4           fstat
+  1.78    0.000011           6         2           open
+  1.30    0.000008           8         1           munmap
+  0.97    0.000006           6         1         1 access
+  0.65    0.000004           2         2           close
+  0.49    0.000003           3         1           execve
+  0.32    0.000002           2         1           brk
+  0.32    0.000002           2         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000617                  1250         1 total
+
+Command:
+	strace -c ./tr2u '123' '456' < large_input_file.txt > output3a2.txt
+
+Output:
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 56.75   16.491028           3   5000000           write
+ 43.25   12.570299           3   5000002           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         2           fstat
+  0.00    0.000000           0         7           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00   29.061327              10000024         1 total
+
+(b) copying a file to my terminal
+
+Command:
+	strace -c ./tr2b '123' '456' < large_input_file.txt
+
+Output:
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 97.72    0.126575           6     19816           write
+  2.28    0.002949           5       613           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         4           fstat
+  0.00    0.000000           0         9           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.129524                 20455         1 total
+
+Command:
+	strace -c ./tr2u '123' '456' < large_input_file.txt
+
+Output:
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 58.20   19.979918           4   5000000           write
+ 41.80   14.350426           3   5000002           read
+  0.00    0.000024           3         7           mmap
+  0.00    0.000024           6         4           mprotect
+  0.00    0.000017           9         2           open
+  0.00    0.000008           8         1           munmap
+  0.00    0.000002           1         2           close
+  0.00    0.000002           1         2           fstat
+  0.00    0.000002           2         1           arch_prctl
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+------ ----------- ----------- --------- --------- ----------------
+100.00   34.330423              10000024         1 total
+
+Note:
+In both (a) and (b), the buffered command clearly has significantly less system calls,
+whereas the unbuffered command has one read and one write system call
+for each byte in the input file, plus several other system calls.
+
+Also, while the buffered command had significantly more system calls when
+copying a file to my terminal, the unbuffered command has the same number of
+system calls in (a) and (b).
+
+Question 4):
+(a):
+Command:
+	time ./tr2b '123' '456' < large_input_file.txt > output4a1.txt
+
+Output:
+real	0m0.366s
+user	0m0.195s
+sys	0m0.060s
+
+Command:
+	time ./tr2u '123' '456'< large_input_file.txt > output4a2.txt
+
+Output:
+real	0m13.838s
+user	0m3.143s
+sys	0m10.594s
+
+(b):
+Command:
+	time ./tr2b '123' '456' < large_input_file.txt
+
+Output:
+real	0m4.866s
+user	0m0.251s
+sys	0m0.081s
+
+Command:
+	time ./tr2u '123' '456' < large_input_file.txt
+
+Output:
+real	0m13.161s
+user	0m3.227s
+sys	0m9.898s
+
+Note:
+As expected, consistent with the observations from the strace commands,
+the buffered program is much faster than the unbuffered program
+when copying the same amount of data.
+This is due to the increased number of system calls made by the unbuffered
+program, which incurs alot of overhead.
+
+Additionally, we found that the buffered command had many more system calls
+when copying to the terminal in (b), as shown with our strace commands.
+This is reflected in that the time elapsed for the command is significantly
+greater for the buffered command when copying to the terminal (b) than when
+copying one file to another (a).
+
+Homework:
+-------------------
+I created test files with varying number of input lines (0, 100, 10000, million),
+by repetitively printing the line in the spec for the previous assignment as follows:
+
+I made a .c program that looks like:
+
+#include <stdio.h>
+
+int main()
+{
+  int n = 0;
+  for (int i = 0; i < n; i++)
+  {
+    printf("*~BO *{_CIA *hXE]D *LER #@_GZY #E\\OX #^BO #FKPS #NEM\4\n");
+  }
+}
+
+and I compiled it, then I piped the output into files named n_lines.txt,
+where 'n' in the code and in the filename are the varying numbers of input lines.
+	
+Next, I moved my sfrob script from last assignment into the current directory.
+I ran the following commands and got the following outputs:
+
+Command:
+	time ./sfrob < 0_lines.txt
+Output:
+real	0m0.002s
+user	0m0.000s
+sys	0m0.001s
+
+Command:
+	time ./sfrobu < 0_lines.txt
+Output:
+real	0m0.002s
+user	0m0.000s
+sys	0m0.001s
+
+Command:
+	time ./sfrobu -f < 0_lines.txt
+Output:
+real	0m0.002s
+user	0m0.000s
+sys	0m0.001s
+
+Command:
+	time ./sfrob < 100_lines.txt
+Output:
+real	0m0.004s
+user	0m0.002s
+sys	0m0.001s
+
+Command:
+	time ./sfrobu < 100_lines.txt
+Output:
+real    0m0.011s
+user    0m0.000s
+sys     0m0.010s
+
+Command:
+	time ./sfrobu -f < 100_lines.txt
+Output:
+real	0m0.011s
+user	0m0.002s
+sys	0m0.008s
+
+Command:
+        time ./sfrob < 10,000_lines.txt
+Output:
+real    0m0.087s
+user    0m0.058s
+sys     0m0.025s
+
+Command:
+	time ./sfrobu < 10,000_lines.txt
+Output:
+real	0m0.869s
+user	0m0.209s
+sys	0m0.655s
+
+Command:
+	time ./sfrobu -f < 10,000_lines.txt
+Output:
+real	0m0.871s
+user	0m0.236s
+sys	0m0.630s
+
+Command:
+        time ./sfrob < million_lines.txt
+Output:
+real	0m25.868s
+user	0m8.359s
+sys	0m2.058s
+
+Command:
+        time ./sfrobu < million_lines.txt
+Output:
+real	1m29.697s
+user	0m23.423s
+sys	1m5.653s
+
+Command:
+        time ./sfrobu -f < million_lines.txt
+Output:
+real	1m30.822s
+user	0m24.244s
+sys	1m5.976s
+
+Note:
+Clearly, in all cases (except for 0_lines.txt), the run-time for sfrobu, the program
+I have written with system calls, is much higher than sfrob, the program I have written
+using getchar() and putchar().
+
+This is consistent with what we expect; we would expect the program that I have written
+with my own system calls for read() and write() to have a less perfect implementation
+than getchar() and putchar(), which abstract the system calls away from me.
+In my own program, it is likely slower due to imperfect implementation of the buffer,
+such as non-optimal buffer size increases. As the number of input lines increases,
+the difference in time between the two commands increases.
+
+Also, there appears to be a very slight increase in run time for the -f option of the
+sfrobu command. However, the increase is very small and could be due to random variations.
+Therefore, it appears that the -f option has little/no impact on the time of the program.
+
+This explains the significantly slower run time for sfrobu, when compared with sfrob.
+
+It makes sense that 0_lines.txt has no significant difference in time, as there is no
+need for system calls to read() and write().
+
+In the Assignment hints on CCLE, it says to not create a specific time function,
+so I have not attempted to 'estimate the CPU time cost as a function of the number of
+input lines'.
+
+-------------------------
+If the assignment was changed so that the rewritten program also had to use system calls
+rather than <stdlib.h> memory allocations, then we would obtain memory using
+brk() and sbrk() system calls.
+
+For brk(), the parameter is void *addr, a pointer to allocated space.
+For sbrk(), the parameter is intptr_t incr, a number of bytes to be added.
+
+In both cases, the allocated space is changed accordingly. The parameter depends on
+what we are specifically allocating memory for in the program, and how many bytes are
+needed.
+
+I could deallocate memory by passing in a negative number to sbrk(), which would
+de-allocate memory. I can pass in the correct number of bytes because throughout my
+program, I keep track of how many words there are, how long the words are, and I can
+determine the size of different types with sizeof(type).
+
+Using stace on sfobu runs with inputs of varying size...
+Command:
+	strace ./sfrobu < 100_lines.txt
+Small Part of Output:
+fstat(0, {st_mode=S_IFREG|0644, st_size=5400, ...}) = 0
+brk(NULL)                               = 0x2281000
+brk(0x22a3000)                          = 0x22a3000
+brk(NULL)                               = 0x22a3000
+
+Command:
+	strace ./sfrobu < 10,000_lines.txt
+Small Part of Output:
+fstat(0, {st_mode=S_IFREG|0644, st_size=540000, ...}) = 0
+mmap(NULL, 540672, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7fbaa8197000
+read(0, "*~BO *{_CIA *hXE]D *LER #@_GZY #"..., 540000) = 540000
+mremap(0x7fbaa8197000, 540672, 1081344, MREMAP_MAYMOVE) = 0x7fbaa808f000
+read(0, "", 540000)                     = 0
+brk(NULL)                               = 0xd2e000
+brk(0xd4f000)                           = 0xd4f000
+brk(NULL)                               = 0xd4f000
+brk(NULL)                               = 0xd4f000
+brk(0xd75000)                           = 0xd75000
+
+
+We can see that after the fstat system calls, brk() is called to allocate memory.
+This is consistent with my code, in which I use library functions to call fstat()
+to determine the size of the file, and then allocate memory for words and word variables.
+This points to brk() being a correct system call for memory allocation

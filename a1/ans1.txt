@@ -1,0 +1,120 @@
+1. man -k
+2. The mv program is located at /usr/local/cs/bin/mv
+   The sh program is located at /usr/bin/sh
+   I used which mv sh to find these file paths
+3. The executable programs in /usr/bin have names that are exactly two characters long and end in r are ar, pr, and tr
+   ar creates, modifies, and extracts from archives
+   pr converts text files for printing
+   tr translates or deletes characters
+   
+   To find the list of executable programs, I used find /usr/bin -name "?r" -executable
+   Then, I used man to find out what each of these executable programs do
+4. When you execute the command named by the symbolic link /usr/bin/emacs, /usr/bin/emacs-24.3 is actually executed.
+   I used ls -l /usr/bin/emacs, and then ls -l /etc/alternatives/emacs (the path to another symbolic link that the first one links to) to find the file that is actually executed.
+5. The version number of the /usr/bin/gcc program is 4.8.5
+   The version number of the plain gcc program is 10.2.0
+   I found these with /usr/bin/gcc -v and gcc -v
+   These are different programs because they are located in different directories, and thus are different files entirely.
+6. For the chmod program, which changes permissions on a file...
+   the symbolic mode u+sx,o-w means to give the owner of the file permissions to setuid (set user ID) and execute the file,
+   and to remove the permission to write for users who are not the owner of the file or part of the group
+7. I used man find to determine that the -mtime n option refines the search to files that have been modified with n*24 hours (thus n days),
+   and that the -type d option refines the search to only include directories.
+   
+   Thus, I used find /usr/local/cs -mtime -28 -type d to find all specified directories.
+   According to the "Assignment 1 Hints" pdf on the CCLE page, I should report the total number of such entries and show the first 5 entries.
+   To determine the total number of entries, I used find /usr/local/cs -mtime -28 -type d | wc -l
+
+   580 total number of entries
+   /usr/local/cs
+   /usr/local/cs/src/bash
+   /usr/local/cs/src/bash/RCS
+   /usr/local/cs/src/grep
+   /usr/local/cs/src/grep/RCS
+
+8. First, I used which find the determine the location of find: /usr/bin/find. Thus, we are interested in the symbolic links inside the /usr/bin directory.
+   Next, I used man find to determine that the -type l option of the find command refines the search to only include symbolic links.
+   Finally, I used find /usr/bin -type l | wc -l to determine that there are 307 symbolic links in the same directory as find
+9. First, I used man find to determine that ls -a does not ignore entries starting with .
+   man find also shows that -l uses long listing format
+   man find also shows that -t sorts entries by time, with the newest first (by default using modification times)
+
+   Thus, I use ls /usr/lib64/ -alt
+   The oldest regular file in the /usr/lib64 directory is librom1394.so.0.3.0 (using last-modified time to determine age)
+10. Using man locale, I determined that the locale command gets its data from environment variables, and that the usual default path
+    for compiled individual locale files is /usr/lib/locale
+11. The commands in Emacs that have downcase in their name are:
+    M-x ... RET	 downcase-dwim
+    C-x C-l 	 downcase-region
+    M-l		 downcase-word
+
+    According to the Emacs Tutorial, every keystroke is actually a command, even simple keystrokes like the letters A and z:
+    printing characters are commands to insert themselves. Therefore...
+    The Emacs commands I used to answer this question are:
+    C-h a 
+    d
+    o
+    w
+    n
+    c
+    a 
+    s 
+    t
+12. I repetitively used C-h k, followed by the command I was looking up (C-M-r through C-M-v) until I had looked up all of the commands  
+    
+    C-M-r (isearch-backward-regexp) does an incremental search backward for regular expression
+    C-M-s (iserach-repeat-forward) does a repeat incremental search forwards
+    C-M-t (transpose-sexps) swaps the positions of the previous balanced expression and the next one. An argument works as a repeat count, moving the previous expression over the number of following expressions that the argument is.
+    C-M-u (backward-up-list) moves backward out of one level of parentheses
+    C-M-v (scroll-other-window) scrolls next window upward the argument number of lines, or near the full screen if there is no argument
+13. The Emacs commands I used to answer this question were:
+    C-h k
+    C-g
+
+    The Emacs keystroke C-g runs the command keyboard-quit, which signals a 'quit' condition.
+    During execution of Lisp code, this character causes a quit directly.
+    At top-level, as an editor command, this simply beeps.
+14. The Emacs commands I used to answer this question were:
+    C-h f
+    y
+    a
+    n
+    k
+    
+    The Emacs yank function can be easily invoked using the keystroke C-y
+    It resinerts ("pastes") the last stretch of killed text. More precisely, reinserts the most recent kill, which is the stretch of killed text most recently killed OR yanked.
+    Put point at the end, and set mark at the beginning without activating it.
+15. I used the following to determine that dired was invoked with C-x d
+    C-h f
+    d
+    i
+    r
+    e
+    d
+
+    Then, I used the following Emacs commands to invoke dired
+    C-x d
+    DEL
+    DEL			<--- (I called DEL to delete the "~/" that was automatically there)
+    /
+    u
+    s
+    r
+    /
+    b
+    i
+    n
+
+    This outputted a screen that said total used in directory 350916 available 8.8 GiB. I noticed that the first three files were called ., .., and [
+   
+   Next, I used the following shell command:
+   ls /usr/bin -l
+
+   This outputted a screen that said total 350828. Additionally, the first file was named [
+
+   The number outputted for ls -l was less than the number for dired.
+   This is likely because certain files were hidden when using ls -l, such as . and .., as I observed.
+   
+   Additionally, the dired output shows a number of "available", that the ls -l output does not
+   
+   Finally, you can interact with the files outputted by the dired command in emacs, whereas the ls -l shell command simply outputs a list that you cannot interact with.
